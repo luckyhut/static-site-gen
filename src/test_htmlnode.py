@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import TextNode
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 class TestHTMLNode(unittest.TestCase):
@@ -38,6 +38,71 @@ class TestLeafNode(unittest.TestCase):
         solution2 = "<a href=\"test.com\">Click me</a>"
         self.assertEqual(leaf1.to_html(), solution1)
         self.assertEqual(leaf2.to_html(), solution2)
+
+class TestParentNode(unittest.TestCase):
+    def test_to_html(self):
+
+        solution1 = "<p><b>Bold text</b>Normal text<i>Italic text</i>Normal text</p>"
+        node1 = (ParentNode(
+            "p",
+            [
+                LeafNode("b", "Bold text"),
+                LeafNode(None, "Normal text"),
+                LeafNode("i", "Italic text"),
+                LeafNode(None, "Normal text"),
+            ],)
+        )
+        self.assertEqual(node1.to_html(), solution1)
         
+        solution2 = "<div><p><b>Bold text</b>Normal text<i>Italic text</i>Normal text</p></div>"
+        node2 = ParentNode(
+            "div",
+            [ParentNode(
+                "p",
+                [
+                    LeafNode("b", "Bold text"),
+                    LeafNode(None, "Normal text"),
+                    LeafNode("i", "Italic text"),
+                    LeafNode(None, "Normal text"),
+                ],)]
+        )
+        self.assertEqual(node2.to_html(), solution2)
+        
+        solution3 = "<div><p><b>Bold text</b>Normal text<i>Italic text</i>Normal text</p><div>Normal text</div></div>"
+        node3 = ParentNode(
+            "div",
+            [
+                ParentNode(
+                    "p",
+                    [
+                        LeafNode("b", "Bold text"),
+                        LeafNode(None, "Normal text"),
+                        LeafNode("i", "Italic text"),
+                        LeafNode(None, "Normal text"),
+                    ],),
+                ParentNode(
+                    "div",
+                    [
+                        LeafNode(None, "Normal text"),
+                    ]
+                )
+             ]
+        )
+        self.assertEqual(node3.to_html(), solution3)
+        
+        node4 = (ParentNode(
+            "p",
+            [])
+        )
+        self.assertRaises(ValueError, node4.to_html)
+
+        node5 = (ParentNode(
+            "p",
+            [
+                LeafNode("b", None),
+            ])
+        )
+        self.assertRaises(ValueError, node5.to_html)
+
 if __name__ == "__main__":
     unittest.main()
