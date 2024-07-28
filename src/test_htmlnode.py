@@ -103,6 +103,6 @@ class TestParentNode(unittest.TestCase):
             ])
         )
         self.assertRaises(ValueError, node5.to_html)
-
+        
 if __name__ == "__main__":
     unittest.main()
