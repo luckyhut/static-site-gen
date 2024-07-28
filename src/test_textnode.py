@@ -25,11 +25,31 @@ class TestTextNode(unittest.TestCase):
         self.assertNotEqual(node5, node6)        
         
 class TestTextNodeToHTML(unittest.TestCase):
-    def test_text_node_to_html_node(self):
+    def test_text_node(self):
         text_node = TextNode("plain text", "text")
         html_node = text_node_to_html_node(text_node)
         self.assertEqual(html_node.tag, None)
-        self.assertEqual(html_node.text, "plain text")
+        self.assertEqual(html_node.value, "plain text")
+
+    def test_text_bold(self):
+        text_node = TextNode("bold text", text_type_bold)
+        html_node = text_node_to_html_node(text_node)
+        self.assertEqual(html_node.tag, "b")
+        self.assertEqual(html_node.value, "bold text")
+
+    def test_text_italic(self):
+        text_node = TextNode("italic text", text_type_italic)
+        html_node = text_node_to_html_node(text_node)
+        self.assertEqual(html_node.tag, "i")
+        self.assertEqual(html_node.value, "italic text")
+
+    def test_text_link(self):
+        text_node = TextNode("link text", text_type_link, "test.com")
+        html_node = text_node_to_html_node(text_node)
+        self.assertEqual(html_node.tag, "a")
+        self.assertEqual(html_node.value, "link text")
+        print(html_node.props)
+        self.assertEqual(html_node.props, {"href": "test.com"})
 
 if __name__ == "__main__":
     unittest.main()
