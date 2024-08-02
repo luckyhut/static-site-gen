@@ -48,7 +48,6 @@ class TestTextNodeToHTML(unittest.TestCase):
         html_node = text_node_to_html_node(text_node)
         self.assertEqual(html_node.tag, "a")
         self.assertEqual(html_node.value, "link text")
-        print(html_node.props)
         self.assertEqual(html_node.props, {"href": "test.com"})
 
 if __name__ == "__main__":
