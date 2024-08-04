@@ -2,6 +2,8 @@ import unittest
 
 from inline import (
     split_nodes_delimiter,
+    split_nodes_image,
+    split_nodes_link,
     extract_markdown_links,
     extract_markdown_images,
 )
@@ -69,3 +71,75 @@ class TestInline(unittest.TestCase):
         text = "text ![link 1](gnu.org) text2 ![link 2](mozilla.org)"
         solution = [("link 1", "gnu.org"), ("link 2", "mozilla.org")]
         self.assertEqual(extract_markdown_images(text), solution)
+
+    def test_split_nodes_image_single(self):
+        node = TextNode(
+            "Text with an image ![alt text](img.png) text after image",
+            text_type_text)
+        solution = [
+            TextNode("Text with an image ", text_type_text),
+            TextNode("alt text", text_type_image, "img.png"),
+            TextNode(" text after image", text_type_text),
+        ]
+        test_node = split_nodes_image([node])
+        self.assertEqual(test_node, solution)
+
+    def test_split_nodes_image_multiple(self):        
+        node = TextNode(
+            "Text with an image ![alt text](img.png) text ![alt2](png2.png) after image",
+            text_type_text)
+        solution = [
+            TextNode("Text with an image ", text_type_text),
+            TextNode("alt text", text_type_image, "img.png"),
+            TextNode(" text ", text_type_text),
+            TextNode("alt2", text_type_image, "png2.png"),
+            TextNode(" after image", text_type_text),
+        ]
+        test_node = split_nodes_image([node])
+        self.assertEqual(test_node, solution)
+    
+    def test_split_nodes_image_wrong_markdown(self):
+        node = TextNode(
+            "Text with an image ![alt text](img.pngtext after image",
+            text_type_text)
+        wrong_answer = [
+            TextNode("Text with an image ![alt text](img.pngtext after image", text_type_text)
+        ]
+        test_node = split_nodes_image([node])
+        self.assertEqual(test_node, wrong_answer)
+
+    def test_split_nodes_link_single(self):
+        node = TextNode(
+            "Text with a link [link name](test.com) text after link",
+            text_type_text)
+        solution = [
+            TextNode("Text with a link ", text_type_text),
+            TextNode("link name", text_type_link, "test.com"),
+            TextNode(" text after link", text_type_text),
+        ]
+        test_node = split_nodes_link([node])
+        self.assertEqual(test_node, solution)
+    
+    def test_split_nodes_link_multiple(self):
+        node = TextNode(
+            "Text with a link [link name](test.com) text [link2](test2.com) after link",
+            text_type_text)
+        solution = [
+            TextNode("Text with a link ", text_type_text),
+            TextNode("link name", text_type_link, "test.com"),
+            TextNode(" text ", text_type_text),
+            TextNode("link2", text_type_link, "test2.com"),
+            TextNode(" after link", text_type_text),
+        ]
+        test_node = split_nodes_link([node])
+        self.assertEqual(test_node, solution)    
+        
+    def test_split_nodes_link_wrong_markdown(self):
+        node = TextNode(
+            "Text with a link [link name](test.com text after link",
+            text_type_text)
+        solution = [
+            TextNode("Text with a link [link name](test.com text after link", text_type_text),
+        ]
+        test_node = split_nodes_link([node])
+        self.assertEqual(test_node, solution)
