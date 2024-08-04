@@ -14,16 +14,18 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
         if delimiter not in node.text:
             new_nodes.append(node)
         else:
-            print(node.text.count(delimiter))
             if node.text.count(delimiter) % 2 != 0:
                 raise Exception("Uneven number of delimiters")
+            split_nodes = []
             split_text = node.text.split(delimiter)
             for i in range(len(split_text)):
-                if i % 2 == 1:
-                    new_nodes.append(TextNode(split_text[i], text_type))
+                if split_text[i] == "":
+                    continue
+                if i % 2 == 0:
+                    split_nodes.append(TextNode(split_text[i], text_type))
                 else:
-                    if split_text[i] != "":
-                        new_nodes.append(TextNode(split_text[i], text_type_text))
+                    split_nodes.append(TextNode(split_text[i], text_type_text))
+        new_nodes.extend(split_nodes)
     return new_nodes
 
 def split_nodes_image(old_nodes):
@@ -42,7 +44,6 @@ def split_nodes_image(old_nodes):
             if parts[0] != "":
                 new_nodes.append(TextNode(parts[0], text_type_text))
             new_nodes.append(TextNode(image[0], text_type_image, image[1]))
-            print(parts)
             original_text = parts[1]
         if original_text != "":
             new_nodes.append(TextNode(original_text, text_type_text))
@@ -64,7 +65,6 @@ def split_nodes_link(old_nodes):
             if parts[0] != "":
                 new_nodes.append(TextNode(parts[0], text_type_text))
             new_nodes.append(TextNode(link[0], text_type_link, link[1]))
-            print(parts)
             original_text = parts[1]
         if original_text != "":
             new_nodes.append(TextNode(original_text, text_type_text))
