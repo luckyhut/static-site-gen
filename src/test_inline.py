@@ -4,9 +4,11 @@ from inline import (
     split_nodes_delimiter,
     split_nodes_image,
     split_nodes_link,
+    text_to_textnodes,
     extract_markdown_links,
     extract_markdown_images,
 )
+
 from textnode import (
     TextNode,
     text_type_text,
@@ -143,3 +145,71 @@ class TestInline(unittest.TestCase):
         ]
         test_node = split_nodes_link([node])
         self.assertEqual(test_node, solution)
+
+class TestToTextNode(unittest.TestCase):
+    def test_text_to_textnodes_bold(self):
+        text = "This sentence contains **bold text**."
+        solution = [
+            TextNode("This sentence contains ", text_type_text),
+            TextNode("bold text", text_type_bold),
+            TextNode(".", text_type_text),
+        ]
+        result = text_to_textnodes(text)
+        self.assertEqual(result, solution)
+
+    def test_text_to_textnodes_italic(self):
+        text = "This is a word in *italics*."
+        solution = [
+            TextNode("This is a word in ", text_type_text),
+            TextNode("italics", text_type_italic),
+            TextNode(".", text_type_text),
+        ]
+        result = text_to_textnodes(text)
+        self.assertEqual(result, solution)
+
+    def test_text_to_textnodes_code(self):
+        text = "This has a `code block`"
+        solution = [
+            TextNode("This has a ", text_type_text),
+            TextNode("code block", text_type_code),
+        ]
+        result = text_to_textnodes(text)
+        self.assertEqual(result, solution)
+
+    def test_text_to_textnodes_link(self):
+        text = "A [link](gnu.org) to gnu.org."
+        solution = [
+            TextNode("A ", text_type_text),
+            TextNode("link", text_type_link,"gnu.org"),
+            TextNode(" to gnu.org.", text_type_text),
+        ]
+        result = text_to_textnodes(text)
+        self.assertEqual(result, solution)
+
+    def test_text_to_textnodes_image(self):
+        text = "A ![cat image](cat.png)."
+        solution = [
+            TextNode("A ", text_type_text),
+            TextNode("cat image", text_type_image, "cat.png"),
+            TextNode(".", text_type_text),
+        ]
+        result = text_to_textnodes(text)
+        self.assertEqual(result, solution)
+        
+    def test_text_to_textnodes_one_of_each(self):
+        text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        solution = [
+            TextNode("This is ", text_type_text),
+            TextNode("text", text_type_bold),
+            TextNode(" with an ", text_type_text),
+            TextNode("italic", text_type_italic),
+            TextNode(" word and a ", text_type_text),
+            TextNode("code block", text_type_code),
+            TextNode(" and an ", text_type_text),
+            TextNode("obi wan image", text_type_image, "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", text_type_text),
+            TextNode("link", text_type_link, "https://boot.dev"),
+        ]
+        result = text_to_textnodes(text)
+        self.assertEqual(result, solution)
+

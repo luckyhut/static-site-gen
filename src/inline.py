@@ -1,12 +1,24 @@
-from textnode import TextNode
 import re
 
-text_type_text = "text"
-text_type_bold = "bold"
-text_type_italic = "italic"
-text_type_code = "code"
-text_type_link = "link"
-text_type_image = "image"
+from textnode import (
+    TextNode,
+    text_type_text,
+    text_type_bold,
+    text_type_italic,
+    text_type_code,
+    text_type_link,
+    text_type_image,
+)
+
+def text_to_textnodes(text):
+    node = TextNode(text, text_type_text)
+    result = []
+    result = split_nodes_delimiter([node], "**", text_type_bold)
+    result = split_nodes_delimiter(result, "*", text_type_italic)
+    result = split_nodes_delimiter(result, "`", text_type_code)
+    result = split_nodes_image(result)
+    result = split_nodes_link(result)
+    return result
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
@@ -16,16 +28,15 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
         else:
             if node.text.count(delimiter) % 2 != 0:
                 raise Exception("Uneven number of delimiters")
-            split_nodes = []
             split_text = node.text.split(delimiter)
             for i in range(len(split_text)):
                 if split_text[i] == "":
                     continue
                 if i % 2 == 0:
-                    split_nodes.append(TextNode(split_text[i], text_type))
+                    new_nodes.append(TextNode(split_text[i], text_type_text))
                 else:
-                    split_nodes.append(TextNode(split_text[i], text_type_text))
-        new_nodes.extend(split_nodes)
+                    new_nodes.append(TextNode(split_text[i], text_type))
+#        new_nodes.extend(split_nodes)
     return new_nodes
 
 def split_nodes_image(old_nodes):
