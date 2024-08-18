@@ -11,32 +11,33 @@ from textnode import (
 )
 
 def text_to_textnodes(text):
-    node = TextNode(text, text_type_text)
-    result = []
-    result = split_nodes_delimiter([node], "**", text_type_bold)
-    result = split_nodes_delimiter(result, "*", text_type_italic)
-    result = split_nodes_delimiter(result, "`", text_type_code)
-    result = split_nodes_image(result)
-    result = split_nodes_link(result)
-    return result
+    nodes = [TextNode(text, text_type_text)]
+    nodes = split_nodes_delimiter(nodes, "**", text_type_bold)
+    nodes = split_nodes_delimiter(nodes, "*", text_type_italic)
+    nodes = split_nodes_delimiter(nodes, "`", text_type_code)
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
+    print(nodes)
+    return nodes
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
     for node in old_nodes:
-        if delimiter not in node.text:
+        if node.text_type != text_type_text:
             new_nodes.append(node)
-        else:
-            if node.text.count(delimiter) % 2 != 0:
-                raise Exception("Uneven number of delimiters")
-            split_text = node.text.split(delimiter)
-            for i in range(len(split_text)):
-                if split_text[i] == "":
-                    continue
-                if i % 2 == 0:
-                    new_nodes.append(TextNode(split_text[i], text_type_text))
-                else:
-                    new_nodes.append(TextNode(split_text[i], text_type))
-#        new_nodes.extend(split_nodes)
+            continue
+        split_nodes = []
+        split_text = node.text.split(delimiter)
+        if node.text.count(delimiter) % 2 != 0:
+            raise Exception("Uneven number of delimiters")
+        for i in range(len(split_text)):
+            if split_text[i] == "":
+                continue
+            if i % 2 == 0:
+                split_nodes.append(TextNode(split_text[i], text_type_text))
+            else:
+                split_nodes.append(TextNode(split_text[i], text_type))
+        new_nodes.extend(split_nodes)
     return new_nodes
 
 def split_nodes_image(old_nodes):
