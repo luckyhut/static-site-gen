@@ -156,8 +156,6 @@ Paragraph 2: *Italics text*
         node = markdown_to_html_node(markdown)
         result = node.to_html()
         solution = "<div><p>Example <b>bold</b> line line 2</p><p>Paragraph 2: <i>Italics text</i></p></div>"
-        print(result)
-        print(solution)
         self.assertEqual(result, solution)
 
     def test_headings(self):

@@ -114,7 +114,6 @@ def markdown_to_html_node(markdown):
     blocks = markdown_to_blocks(markdown)
     nodes = []
     for block in blocks:
-        # print(block)
         new_node = block_to_html_node(block)
         nodes.append(new_node)
     parent = ParentNode("div", nodes, None)
@@ -213,17 +212,13 @@ def paragraph_to_html_node(block):
     lines = block.split("\n")
     paragraph = " ".join(lines)
     children = text_to_children(paragraph)
-    # print(children)
     return ParentNode("p", children)
     
 def text_to_children(text):
     text_nodes = text_to_textnodes(text)
-    # print(text, text_nodes, '\n--------------------')
     children = []
     for text_node in text_nodes:
         html_node = text_node_to_html_node(text_node)
         print(html_node)
-        # print(html_node.value, html_node.tag)
         children.append(html_node)
-    # print(f"children {children}")
     return children
